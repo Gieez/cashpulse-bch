@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Activity, Server, Radio, Wallet, CheckCircle2 } from "lucide-react";
+import { Activity, Server, Radio, Wallet, CheckCircle2, Play } from "lucide-react";
 import { ConnectionState } from "@/lib/fulcrum";
 
 interface TelemetryHeaderProps {
@@ -126,6 +126,18 @@ export function TelemetryHeader({
               Mainnet
             </button>
           </div>
+
+          {/* Video Demo Button */}
+          <a
+            href="/demo.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/30 text-xs font-medium text-slate-300 hover:text-white transition-all"
+            title="Watch Cinematic Browser Motion Video Demo"
+          >
+            <Play className="w-3.5 h-3.5 text-emerald-400 fill-current" />
+            <span>Video Demo</span>
+          </a>
 
           {/* WizardConnect Wallet */}
           <button

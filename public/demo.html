@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<!-- Made with the Bang Motion skill v1.19.0 (https://github.com/bangtutorial/bang-motion) - MIT -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CashPulse — Cinematic Video Demo | BCH BLAZE 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
+}}
+</script>
+<style>
+:root {
+  --base: #08090D;
+  --surface: #0F1219;
+  --ink: #F3F4F6;
+  --muted: #8892B0;
+  --accent: #00E599;
+  --accent-lit: #38BDF8;
+  --warn: #EF4444;
+  --gold: #F59E0B;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body {
+  width:100%; height:100%; background:#000; overflow:hidden;
+  font-family:"Space Grotesk", system-ui, sans-serif; color:var(--ink);
+  user-select:none;
+}
+#filters { position:fixed; width:0; height:0; opacity:0; pointer-events:none; }
+
+/* 1920x1080 Stage locked aspect ratio */
+#stage {
+  position:absolute; width:1920px; height:1080px; left:50%; top:50%;
+  transform:translate(-50%,-50%); overflow:hidden; background:var(--base);
+}
+#world { position:absolute; inset:0; perspective:1200px; transform-style:preserve-3d; }
+#gl { position:absolute; inset:0; width:100%; height:100%; z-index:1; }
+
+.bgfx {
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  background: radial-gradient(circle at 50% 50%, rgba(0,229,153,0.06) 0%, transparent 70%);
+}
+
+#dom {
+  position:absolute; inset:0; z-index:3; display:flex; align-items:center; justify-content:center;
+}
+
+/* Scenes Container */
+.scene {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; opacity:0; pointer-events:none;
+  padding:80px; text-align:center;
+}
+
+/* Typography styles */
+.hero {
+  font-size:84px; font-weight:900; line-height:1.05; letter-spacing:-0.03em;
+  text-transform:uppercase; margin-bottom:20px;
+}
+.hero.huge { font-size:120px; }
+.sub {
+  font-size:32px; font-weight:500; color:var(--muted); max-width:1100px; line-height:1.4;
+}
+.mono { font-family:"JetBrains Mono", monospace; }
+
+/* Highlight pills & badges */
+.badge {
+  display:inline-flex; align-items:center; gap:12px; padding:10px 24px;
+  border-radius:9999px; font-family:"JetBrains Mono", monospace; font-size:20px;
+  font-weight:700; text-transform:uppercase; letter-spacing:0.1em;
+  background:rgba(0,229,153,0.12); color:var(--accent); border:1px solid rgba(0,229,153,0.3);
+  margin-bottom:30px;
+}
+.badge.warn {
+  background:rgba(239,68,68,0.12); color:var(--warn); border-color:rgba(239,68,68,0.3);
+}
+
+/* Terminal Card UI Mockup */
+.terminal-card {
+  width:960px; background:#0F1219; border:2px solid #1E2638; border-radius:28px;
+  padding:44px; display:grid; grid-template-columns:320px 1fr; gap:44px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.8), 0 0 50px rgba(0,229,153,0.2);
+  text-align:left; transform-style:preserve-3d;
+}
+.qr-box {
+  background:#fff; border-radius:20px; padding:16px; display:flex;
+  align-items:center; justify-content:center; box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+.qr-box svg { width:100%; height:100%; }
+
+.metric-strip {
+  display:flex; gap:20px; margin-top:24px;
+}
+.metric-box {
+  flex:1; background:#151B26; border:1px solid #1E2638; border-radius:16px;
+  padding:16px 20px; font-family:"JetBrains Mono", monospace;
+}
+.metric-box span { display:block; font-size:13px; color:var(--muted); text-transform:uppercase; }
+.metric-box strong { font-size:26px; color:#fff; display:block; margin-top:4px; }
+
+/* Speed clock */
+.clock-display {
+  font-family:"JetBrains Mono", monospace; font-size:180px; font-weight:800;
+  letter-spacing:-0.05em; line-height:1;
+}
+
+/* Light leak & Vignette */
+.leak {
+  position:absolute; inset:0; z-index:4; pointer-events:none; opacity:0;
+  background:radial-gradient(circle at 50% 30%, rgba(0,229,153,0.4) 0%, transparent 60%);
+  mix-blend-mode:screen;
+}
+.vignette {
+  position:absolute; inset:0; z-index:5; pointer-events:none;
+  background:radial-gradient(circle at 50% 50%, transparent 60%, rgba(0,0,0,0.7) 100%);
+}
+
+/* Scrub UI control (press Space or debug=1) */
+#ui {
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:99;
+  display:none; align-items:center; gap:12px; background:rgba(15,18,25,0.9);
+  padding:8px 16px; border-radius:12px; border:1px solid #1E2638; font-family:monospace; font-size:12px;
+}
+#ui.show { display:flex; }
+#ui button {
+  background:#1E2638; color:#fff; border:none; padding:4px 10px; border-radius:6px; cursor:pointer;
+}
+#scrub { width:240px; }
+</style>
+</head>
+<body>
+
+<svg id="filters"><defs></defs></svg>
+
+<div id="stage">
+  <div id="world">
+    <canvas id="gl"></canvas>
+    <div class="bgfx"></div>
+    <div id="dom">
+      
+      <!-- SCENE 1: The Problem (10-minute block bottleneck) -->
+      <section class="scene" id="sc-1">
+        <div class="badge warn">THE CRYPTO PAYMENT BOTTLENECK</div>
+        <h1 class="hero" id="h-1">Why Wait 10 Minutes<br><span style="color:var(--warn)">For A Cup Of Coffee?</span></h1>
+        <div class="clock-display mono" id="clock-1" style="color:var(--warn)">600.00s</div>
+        <p class="sub" style="margin-top:20px">Traditional blockchain confirmations take 10 to 60 minutes. Retail commerce can't wait.</p>
+      </section>
+
+      <!-- SCENE 2: The Solution (Bitcoin Cash Zero-Conf) -->
+      <section class="scene" id="sc-2">
+        <div class="badge">BITCOIN CASH ARCHITECTURE</div>
+        <h1 class="hero huge" id="h-2">P2P CASH DOESN'T WAIT.</h1>
+        <div class="hero mono" style="font-size:92px; color:var(--accent)">
+          &lt; 500<span style="font-size:50px">ms</span> SETTLEMENT
+        </div>
+        <p class="sub">Decentralized peer-to-peer mempool propagation + native Double-Spend Proofs (DSPROOF).</p>
+      </section>
+
+      <!-- SCENE 3: Product In Action (CashPulse POS Terminal) -->
+      <section class="scene" id="sc-3">
+        <div class="badge">INTRODUCING CASHPULSE</div>
+        <h1 class="hero" style="font-size:64px; margin-bottom:30px">
+          Sub-Second Zero-Conf Checkout Terminal
+        </h1>
+
+        <div class="terminal-card" id="card-3">
+          <div class="qr-box">
+            <!-- BIP-21 CashPulse QR Code SVG -->
+            <svg viewBox="0 0 100 100" fill="#08090D">
+              <rect x="0" y="0" width="30" height="30" rx="4"/>
+              <rect x="6" y="6" width="18" height="18" fill="#fff" rx="2"/>
+              <rect x="10" y="10" width="10" height="10" fill="#00E599"/>
+              <rect x="70" y="0" width="30" height="30" rx="4"/>
+              <rect x="76" y="6" width="18" height="18" fill="#fff" rx="2"/>
+              <rect x="80" y="10" width="10" height="10" fill="#00E599"/>
+              <rect x="0" y="70" width="30" height="30" rx="4"/>
+              <rect x="6" y="76" width="18" height="18" fill="#fff" rx="2"/>
+              <rect x="10" y="80" width="10" height="10" fill="#00E599"/>
+              <rect x="36" y="10" width="28" height="8"/>
+              <rect x="36" y="24" width="12" height="12"/>
+              <rect x="52" y="24" width="12" height="24"/>
+              <rect x="10" y="36" width="14" height="24"/>
+              <rect x="36" y="52" width="28" height="10"/>
+              <rect x="70" y="40" width="20" height="14"/>
+              <rect x="70" y="64" width="14" height="26"/>
+              <rect x="36" y="72" width="24" height="18"/>
+            </svg>
+          </div>
+
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--muted); margin-bottom:6px">
+              LIVE BIP-21 INVOICE
+            </div>
+            <div style="font-size:36px; font-weight:800; color:#fff">
+              0.0050 BCH <span style="font-size:20px; color:var(--accent); font-weight:500">($1.36 USD)</span>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); margin-top:4px">
+              to: bitcoincash:qp3wjpa3tjlj042z2wv7hahsldgwhwy0rq9sywjpyy
+            </div>
+
+            <div class="metric-strip">
+              <div class="metric-box">
+                <span>FULCRUM WSS</span>
+                <strong style="color:var(--accent-lit)">CONNECTED</strong>
+              </div>
+              <div class="metric-box">
+                <span>MEMPOOL LATENCY</span>
+                <strong style="color:var(--accent)">380ms</strong>
+              </div>
+              <div class="metric-box">
+                <span>DOUBLE SPEND</span>
+                <strong style="color:var(--accent)">CLEAN</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 4: Core Pillars -->
+      <section class="scene" id="sc-4">
+        <div class="badge">BUILT FOR SOVEREIGN COMMERCE</div>
+        <h1 class="hero" id="h-4">Zero Middleman. Pure Web3.</h1>
+        <div style="display:flex; gap:36px; max-width:1400px; margin-top:30px">
+          <div style="flex:1; background:#0F1219; border:1px solid #1E2638; border-radius:24px; padding:36px; text-align:left">
+            <div style="font-size:40px; margin-bottom:12px">⚡</div>
+            <h3 style="font-size:24px; font-weight:700; color:#fff; margin-bottom:8px">Browser WSS Direct</h3>
+            <p style="font-size:16px; color:var(--muted); line-height:1.5">No custodial backend. Direct client WebSocket connection to Fulcrum Electrum nodes.</p>
+          </div>
+          <div style="flex:1; background:#0F1219; border:1px solid #1E2638; border-radius:24px; padding:36px; text-align:left">
+            <div style="font-size:40px; margin-bottom:12px">🛡️</div>
+            <h3 style="font-size:24px; font-weight:700; color:#fff; margin-bottom:8px">DSProof Protection</h3>
+            <p style="font-size:16px; color:var(--muted); line-height:1.5">Real-time cryptographic fraud proof for zero-risk merchant acceptance.</p>
+          </div>
+          <div style="flex:1; background:#0F1219; border:1px solid #1E2638; border-radius:24px; padding:36px; text-align:left">
+            <div style="font-size:40px; margin-bottom:12px">💸</div>
+            <h3 style="font-size:24px; font-weight:700; color:#fff; margin-bottom:8px">&lt; $0.001 Tx Fee</h3>
+            <p style="font-size:16px; color:var(--muted); line-height:1.5">Fraction of a cent transaction fees. Built for daily retail & creator tipping.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 5: DoraHacks Bumper / Call to Action -->
+      <section class="scene" id="sc-5">
+        <div class="badge">BCH BLAZE 2026 HACKATHON</div>
+        <h1 class="hero huge" style="color:var(--accent); letter-spacing:-0.04em">
+          CASHPULSE
+        </h1>
+        <p class="hero" style="font-size:38px; color:#fff; margin-top:-10px">
+          Sub-Second Zero-Conf Point of Sale
+        </p>
+        <div style="display:flex; align-items:center; gap:20px; margin-top:30px">
+          <div style="padding:14px 32px; border-radius:14px; background:#00E599; color:#08090D; font-weight:800; font-size:22px; font-family:'JetBrains Mono',monospace">
+            cashpulse-bch.vercel.app
+          </div>
+          <div style="padding:14px 28px; border-radius:14px; background:#151B26; border:1px solid #1E2638; color:var(--accent-lit); font-family:'JetBrains Mono',monospace; font-size:20px">
+            github.com/Gieez/cashpulse-bch
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+  <div class="leak" id="leak"></div>
+  <div class="vignette"></div>
+</div>
+
+<div id="ui">
+  <button id="btn-play">Pause</button>
+  <button id="btn-restart">Restart</button>
+  <input id="scrub" type="range" min="0" max="1000" value="0">
+  <span id="clock">0.00s</span>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const $ = (s, r = document) => r.querySelector(s);
+
+// Responsive scale for 1920x1080 stage
+function resize() {
+  const stage = $('#stage');
+  const sx = window.innerWidth / 1920;
+  const sy = window.innerHeight / 1080;
+  const s = Math.min(sx, sy);
+  stage.style.transform = `translate(-50%, -50%) scale(${s})`;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Web Audio API Synthesizer (Audio cues on zero-conf hits)
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playChime(freq = 880, dur = 0.4) {
+  try {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(freq * 1.5, audioCtx.currentTime + dur * 0.5);
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + dur);
+  } catch(e) {}
+}
+
+function playSubBass() {
+  try {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.35);
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.4);
+  } catch(e) {}
+}
+
+/* ============ THREE.JS WEBGL SPEED WARP ============ */
+const W = 1920, H = 1080;
+const renderer = new THREE.WebGLRenderer({ canvas: $('#gl'), antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(W, H, false);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x08090D, 0.015);
+const camera = new THREE.PerspectiveCamera(50, W / H, 0.1, 400);
+
+// Global animation state
+const S = {
+  camZ: 20, camY: 0, speed: 0.2, warp: 0,
+  bloom: 0.8, leak: 0
+};
+
+// Tunnel particle grid
+const P_COUNT = 1500;
+const pGeom = new THREE.BufferGeometry();
+const pPos = new Float32Array(P_COUNT * 3);
+const pColors = new Float32Array(P_COUNT * 3);
+
+for (let i = 0; i < P_COUNT; i++) {
+  pPos[i * 3] = (Math.random() - 0.5) * 80;
+  pPos[i * 3 + 1] = (Math.random() - 0.5) * 50;
+  pPos[i * 3 + 2] = -Math.random() * 80 + 10;
+
+  const isBch = Math.random() > 0.4;
+  pColors[i * 3] = isBch ? 0 : 0.22;
+  pColors[i * 3 + 1] = isBch ? 0.9 : 0.74;
+  pColors[i * 3 + 2] = isBch ? 0.6 : 0.97;
+}
+pGeom.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+pGeom.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
+
+const pMat = new THREE.PointsMaterial({
+  size: 0.6, vertexColors: true, transparent: true, opacity: 0.7,
+  blending: THREE.AdditiveBlending
+});
+const particles = new THREE.Points(pGeom, pMat);
+scene.add(particles);
+
+// Post-processing Bloom
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(W, H), 0.8, 0.5, 0.2);
+composer.addPass(bloomPass);
+composer.addPass(new OutputPass());
+
+/* ============ GSAP MASTER TIMELINE ============ */
+const tl = gsap.timeline({ repeat: -1 });
+
+// SCENE 1: The Bottleneck (0 - 4s)
+tl.set('#sc-1', { opacity: 1, zIndex: 10 });
+tl.fromTo('#sc-1', { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 1, ease: 'power2.out' }, 0);
+tl.to('#clock-1', {
+  textContent: '010.00s', duration: 3.5, ease: 'none',
+  snap: { textContent: 0.01 },
+  onUpdate() {
+    const val = parseFloat($('#clock-1').textContent);
+    if (val < 100) $('#clock-1').textContent = `00${val.toFixed(2)}s`;
+    else $('#clock-1').textContent = `${val.toFixed(2)}s`;
+  }
+}, 0.2);
+tl.to('#sc-1', { scale: 1.15, opacity: 0, duration: 0.6, ease: 'power3.in' }, 3.6);
+
+// SCENE 2: The Solution (4s - 8s)
+tl.set('#sc-2', { opacity: 1, zIndex: 10 }, 4.1);
+tl.fromTo('#sc-2', { scale: 0.8, opacity: 0 }, {
+  scale: 1, opacity: 1, duration: 0.8, ease: 'back.out(1.4)',
+  onStart() { playSubBass(); playChime(587, 0.5); }
+}, 4.2);
+tl.to(S, { speed: 1.8, warp: 1, duration: 2 }, 4.2);
+tl.to('#sc-2', { scale: 1.1, opacity: 0, duration: 0.5, ease: 'power2.in' }, 7.6);
+
+// SCENE 3: CashPulse POS in Action (8s - 13s)
+tl.set('#sc-3', { opacity: 1, zIndex: 10 }, 8.1);
+tl.fromTo('#sc-3', { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out' }, 8.1);
+tl.fromTo('#card-3', 
+  { rotationX: 18, rotationY: -12, scale: 0.85, opacity: 0 },
+  { 
+    rotationX: 0, rotationY: 0, scale: 1, opacity: 1, duration: 1, ease: 'power3.out',
+    onStart() { playChime(880, 0.6); playSubBass(); }
+  }, 8.3
+);
+tl.to('#card-3', {
+  boxShadow: '0 30px 100px rgba(0,0,0,0.9), 0 0 80px rgba(0,229,153,0.5)',
+  duration: 0.4, yoyo: true, repeat: 1
+}, 10.5);
+tl.to('#sc-3', { y: -50, opacity: 0, duration: 0.6, ease: 'power2.in' }, 12.6);
+
+// SCENE 4: Core Pillars (13s - 17.5s)
+tl.set('#sc-4', { opacity: 1, zIndex: 10 }, 13.1);
+tl.fromTo('#sc-4', { scale: 0.92, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: 'power2.out' }, 13.1);
+tl.to('#sc-4', { scale: 1.08, opacity: 0, duration: 0.6, ease: 'power2.in' }, 17.0);
+
+// SCENE 5: Call to Action / Bumper (17.5s - 23s)
+tl.set('#sc-5', { opacity: 1, zIndex: 10 }, 17.5);
+tl.fromTo('#sc-5', 
+  { scale: 0.75, opacity: 0 }, 
+  { 
+    scale: 1, opacity: 1, duration: 1, ease: 'back.out(1.5)',
+    onStart() { playSubBass(); playChime(1174, 0.8); }
+  }, 17.6
+);
+tl.to('#leak', { opacity: 0.6, duration: 0.8, yoyo: true, repeat: 1 }, 18.2);
+tl.to('#sc-5', { scale: 1.05, opacity: 0, duration: 0.8, ease: 'power2.in' }, 22.2);
+
+// Three.js Render Loop tied to GSAP time
+function animate() {
+  requestAnimationFrame(animate);
+  const time = tl.time();
+  
+  // Animate particle warp
+  const positions = pGeom.attributes.position.array;
+  for (let i = 0; i < P_COUNT; i++) {
+    positions[i * 3 + 2] += S.speed;
+    if (positions[i * 3 + 2] > 20) {
+      positions[i * 3 + 2] = -70;
+    }
+  }
+  pGeom.attributes.position.needsUpdate = true;
+
+  camera.position.z = S.camZ;
+  camera.position.y = Math.sin(time * 0.5) * 0.5;
+  bloomPass.strength = S.bloom;
+
+  composer.render();
+}
+animate();
+
+// Debug Scrub Controls (?debug=1 or Space)
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('debug') === '1') {
+  $('#ui').classList.add('show');
+}
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') {
+    if (tl.paused()) tl.play(); else tl.pause();
+  }
+  if (e.key === 'd' || e.key === 'D') {
+    $('#ui').classList.toggle('show');
+  }
+});
+
+$('#btn-play').addEventListener('click', () => {
+  if (tl.paused()) { tl.play(); $('#btn-play').textContent = 'Pause'; }
+  else { tl.pause(); $('#btn-play').textContent = 'Play'; }
+});
+$('#btn-restart').addEventListener('click', () => { tl.restart(); });
+$('#scrub').addEventListener('input', (e) => {
+  tl.pause();
+  tl.progress(e.target.value / 1000);
+});
+tl.eventCallback('onUpdate', () => {
+  $('#scrub').value = tl.progress() * 1000;
+  $('#clock').textContent = `${tl.time().toFixed(2)}s`;
+});
+</script>
+</body>
+</html>
