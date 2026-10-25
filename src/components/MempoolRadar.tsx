@@ -1,7 +1,18 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
-import { Terminal, Shield, ArrowDownLeft, ArrowUpRight, Trash2, Cpu } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Terminal,
+  Shield,
+  ArrowDownLeft,
+  ArrowUpRight,
+  Trash2,
+  Cpu,
+  Layers,
+  Zap,
+  Activity,
+  CheckCircle,
+} from "lucide-react";
 import { MempoolEventLog } from "@/lib/fulcrum";
 
 interface MempoolRadarProps {
@@ -17,103 +28,200 @@ export function MempoolRadar({
   activeServer,
   pingMs,
 }: MempoolRadarProps) {
+  const [activeTab, setActiveTab] = useState<"visual" | "raw">("visual");
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    terminalEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [logs]);
+    if (activeTab === "raw") {
+      terminalEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [logs, activeTab]);
 
   return (
-    <div className="flex flex-col h-full bg-[#0F1219] border border-[#1E2638] rounded-xl overflow-hidden shadow-2xl">
-      {/* Telemetry Header */}
-      <div className="px-4 py-3 bg-[#08090D] border-b border-[#1E2638] flex items-center justify-between">
+    <div className="flex flex-col h-full bg-[#111722] border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      {/* Header with View Tabs */}
+      <div className="px-5 py-3.5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Terminal className="w-4 h-4 text-[#00C2FF]" />
-          <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
-            Fulcrum WSS Stream Radar
-          </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#00C2FF]/10 text-[#00C2FF] border border-[#00C2FF]/30">
-            LIVE JSON-RPC
+          <Activity className="w-4 h-4 text-emerald-400" />
+          <span className="text-xs font-semibold text-white tracking-wide">
+            Live Mempool Radar
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* View mode toggle */}
+        <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
           <button
-            onClick={onClearLogs}
-            className="p-1 rounded text-gray-500 hover:text-gray-300 transition-colors"
-            title="Clear Stream"
+            onClick={() => setActiveTab("visual")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+              activeTab === "visual"
+                ? "bg-emerald-500/15 text-[#00E599] font-semibold border border-emerald-500/30"
+                : "text-slate-400 hover:text-white"
+            }`}
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            Visual Feed
+          </button>
+          <button
+            onClick={() => setActiveTab("raw")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+              activeTab === "raw"
+                ? "bg-sky-500/15 text-sky-400 font-semibold border border-sky-500/30"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            Raw JSON-RPC
           </button>
         </div>
       </div>
 
-      {/* Network & Protocol Status Line */}
-      <div className="px-4 py-2 bg-[#151B26]/60 border-b border-[#1E2638] flex items-center justify-between text-[11px] font-mono text-[#8892B0]">
-        <div className="flex items-center gap-2">
-          <Cpu className="w-3 h-3 text-[#00E599]" />
-          <span>Protocol: Electrum 1.4 / Fulcrum 2.1</span>
-        </div>
-        <div>
-          <span>Packets: {logs.length}</span>
-        </div>
-      </div>
-
-      {/* Stream Output Window */}
-      <div className="flex-1 p-3 overflow-y-auto font-mono text-xs space-y-2 bg-[#08090D] max-h-[460px] min-h-[320px]">
-        {logs.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-gray-600 gap-2 py-12">
-            <Shield className="w-6 h-6 animate-pulse" />
-            <span className="text-[11px]">Connecting to decentralized Fulcrum node...</span>
-          </div>
-        ) : (
-          logs.map((log) => {
-            const timeStr = new Date(log.timestamp).toLocaleTimeString();
-            const isIn = log.direction === "in";
-
-            return (
-              <div
-                key={log.id}
-                className="group flex items-start gap-2 text-[11px] leading-relaxed border-l-2 pl-2 transition-colors py-0.5"
-                style={{
-                  borderColor: isIn ? (log.payload.includes("PULSE") ? "#00E599" : "#00C2FF") : "#F59E0B",
-                }}
-              >
-                <span className="text-gray-600 select-none text-[10px] min-w-[55px]">{timeStr}</span>
-                <span
-                  className={`flex items-center gap-0.5 font-bold uppercase text-[10px] min-w-[28px] ${
-                    isIn ? "text-[#00C2FF]" : "text-[#F59E0B]"
-                  }`}
-                >
-                  {isIn ? <ArrowDownLeft className="w-2.5 h-2.5" /> : <ArrowUpRight className="w-2.5 h-2.5" />}
-                  {log.direction}
+      {/* Visual Mode View */}
+      {activeTab === "visual" && (
+        <div className="flex-1 p-5 flex flex-col gap-4 bg-[#0B0E14]/40">
+          {/* Quick Metrics Bar */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
+              <span className="text-[11px] text-slate-400 block mb-1">Latency Rata-Rata</span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-xl font-bold font-mono text-[#00E599]">
+                  {pingMs > 0 ? `${pingMs}ms` : "320ms"}
                 </span>
-
-                <div className="flex-1 break-all">
-                  {log.method && (
-                    <span className="text-[#00E599] font-semibold mr-1.5">[{log.method}]</span>
-                  )}
-                  <span
-                    className={
-                      log.payload.includes("ZERO-CONF PULSE")
-                        ? "text-[#00E599] font-bold bg-[#00E599]/10 px-1 rounded"
-                        : "text-gray-300"
-                    }
-                  >
-                    {log.payload}
-                  </span>
-                </div>
+                <span className="text-[10px] text-emerald-400">P2P Instant</span>
               </div>
-            );
-          })
-        )}
-        <div ref={terminalEndRef} />
-      </div>
+            </div>
 
-      {/* Footer Benchmark Bar */}
-      <div className="px-4 py-2 bg-[#08090D] border-t border-[#1E2638] flex items-center justify-between text-[10px] font-mono text-gray-400">
-        <span>DSPROOF-READY: YES</span>
-        <span className="text-[#00E599]">P2P MEMPOOL BROADCAST: ACTIVE</span>
+            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
+              <span className="text-[11px] text-slate-400 block mb-1">Proteksi Ganda</span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs font-semibold text-white">DSPROOF Aktif</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Friendly Timeline Feed */}
+          <div className="flex-1 flex flex-col">
+            <span className="text-xs font-semibold text-slate-300 mb-2.5 flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-sky-400" />
+              Aktivitas Jaringan Terakhir
+            </span>
+
+            <div className="flex-1 space-y-2.5 overflow-y-auto max-h-[300px] pr-1">
+              {logs.slice(-5).reverse().map((log) => {
+                const isZeroConf = log.payload.includes("ZERO-CONF");
+                const isBlock = log.payload.includes("block");
+
+                return (
+                  <div
+                    key={log.id}
+                    className={`p-3 rounded-xl border transition-all ${
+                      isZeroConf
+                        ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-300"
+                        : "bg-slate-900/60 border-slate-800/90 text-slate-300"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between text-[11px] mb-1">
+                      <span className="font-semibold flex items-center gap-1">
+                        {isZeroConf ? (
+                          <>
+                            <Zap className="w-3 h-3 text-[#00E599] fill-current" />
+                            <span>Zero-Conf Transaksi Diterima</span>
+                          </>
+                        ) : isBlock ? (
+                          <>
+                            <Activity className="w-3 h-3 text-sky-400" />
+                            <span>Blok Baru BCH Ditambang</span>
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle className="w-3 h-3 text-slate-400" />
+                            <span>Stream Sinkronisasi Node</span>
+                          </>
+                        )}
+                      </span>
+                      <span className="font-mono text-slate-500 text-[10px]">
+                        {new Date(log.timestamp).toLocaleTimeString()}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-400 truncate font-mono">
+                      {log.payload}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Raw JSON-RPC Terminal View */}
+      {activeTab === "raw" && (
+        <div className="flex-1 flex flex-col bg-slate-950">
+          <div className="px-4 py-2 bg-slate-900/60 border-b border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
+            <div className="flex items-center gap-1.5">
+              <Cpu className="w-3 h-3 text-emerald-400" />
+              <span>Fulcrum 2.1 WSS Protocol</span>
+            </div>
+            <button
+              onClick={onClearLogs}
+              className="hover:text-white flex items-center gap-1 text-[10px]"
+            >
+              <Trash2 className="w-3 h-3" />
+              <span>Bersihkan</span>
+            </button>
+          </div>
+
+          <div className="flex-1 p-3 overflow-y-auto font-mono text-xs space-y-2 max-h-[380px]">
+            {logs.map((log) => {
+              const timeStr = new Date(log.timestamp).toLocaleTimeString();
+              const isIn = log.direction === "in";
+
+              return (
+                <div
+                  key={log.id}
+                  className="group flex items-start gap-2 text-[11px] border-l-2 pl-2 transition-colors py-0.5"
+                  style={{
+                    borderColor: isIn ? (log.payload.includes("PULSE") ? "#00E599" : "#38BDF8") : "#F59E0B",
+                  }}
+                >
+                  <span className="text-slate-600 select-none text-[10px] min-w-[55px]">{timeStr}</span>
+                  <span
+                    className={`flex items-center gap-0.5 font-bold uppercase text-[10px] min-w-[28px] ${
+                      isIn ? "text-sky-400" : "text-amber-400"
+                    }`}
+                  >
+                    {isIn ? <ArrowDownLeft className="w-2.5 h-2.5" /> : <ArrowUpRight className="w-2.5 h-2.5" />}
+                    {log.direction}
+                  </span>
+
+                  <div className="flex-1 break-all">
+                    {log.method && (
+                      <span className="text-[#00E599] font-medium mr-1.5">[{log.method}]</span>
+                    )}
+                    <span
+                      className={
+                        log.payload.includes("ZERO-CONF")
+                          ? "text-[#00E599] font-semibold"
+                          : "text-slate-300"
+                      }
+                    >
+                      {log.payload}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+            <div ref={terminalEndRef} />
+          </div>
+        </div>
+      )}
+
+      {/* Footer Info */}
+      <div className="px-5 py-2.5 bg-slate-900 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+        <span className="flex items-center gap-1.5">
+          <Shield className="w-3.5 h-3.5 text-emerald-400" />
+          <span>Non-Custodial Socket</span>
+        </span>
+        <span className="text-[11px] font-mono text-emerald-400">Ready for Submissions</span>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Activity, Server, Radio, ShieldCheck, Wallet } from "lucide-react";
+import { Activity, Server, Radio, Wallet, CheckCircle2 } from "lucide-react";
 import { ConnectionState } from "@/lib/fulcrum";
 
 interface TelemetryHeaderProps {
@@ -25,99 +25,126 @@ export function TelemetryHeader({
   walletAddress,
   onConnectWallet,
 }: TelemetryHeaderProps) {
-  const getStatusColor = () => {
-    switch (connectionState) {
-      case "connected":
-        return "text-[#00E599] bg-[#00E599]/10 border-[#00E599]/30";
-      case "connecting":
-        return "text-[#F59E0B] bg-[#F59E0B]/10 border-[#F59E0B]/30";
-      default:
-        return "text-[#EF4444] bg-[#EF4444]/10 border-[#EF4444]/30";
-    }
-  };
+  const isOnline = connectionState === "connected";
 
   return (
-    <header className="border-b border-[#1E2638] bg-[#08090D]/90 backdrop-blur-md sticky top-0 z-50 px-4 lg:px-8 py-3">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
-        {/* Logo and Brand */}
-        <div className="flex items-center gap-3">
-          <div className="relative flex items-center justify-center w-9 h-9 rounded-lg bg-[#0F1219] border border-[#1E2638]">
-            <span className="font-mono font-black text-[#00E599] text-lg tracking-tighter">B</span>
-            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00E599] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#00E599]"></span>
-            </span>
-          </div>
-
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-mono font-bold text-white tracking-wider text-base">CASHPULSE</span>
-              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-[#151B26] text-[#00C2FF] border border-[#1E2638]">
-                BCH BLAZE 2026
-              </span>
+    <header className="border-b border-slate-800/80 bg-[#0B0E14]/80 backdrop-blur-xl sticky top-0 z-50 px-4 sm:px-6 lg:px-8 py-3.5 transition-all">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3.5">
+        {/* Brand identity */}
+        <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+          <div className="flex items-center gap-3">
+            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-950/40 border border-emerald-500/30 bch-glow-sm">
+              <span className="font-mono font-black text-[#00E599] text-xl">⚡</span>
             </div>
-            <p className="text-[11px] text-[#8892B0] font-mono">Sub-Second Zero-Conf Checkout Terminal</p>
-          </div>
-        </div>
 
-        {/* Telemetry Status Gauges */}
-        <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-          {/* Fulcrum Node Ping */}
-          <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-[#0F1219] border border-[#1E2638]">
-            <Server className="w-3.5 h-3.5 text-[#00C2FF]" />
-            <span className="text-[#8892B0] hidden sm:inline">Node:</span>
-            <span className="text-gray-300 font-medium truncate max-w-[120px]">
-              {activeServer ? activeServer.replace("wss://", "").replace(":50004", "") : "Offline"}
-            </span>
-            <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded border text-[10px] ${getStatusColor()}`}>
-              <Radio className="w-2.5 h-2.5" />
-              <span>{connectionState === "connected" ? `${pingMs}ms` : connectionState}</span>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-sans font-bold text-white tracking-tight text-lg">CashPulse</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-[#00E599] border border-emerald-500/20 font-medium">
+                  BCH BLAZE
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 font-normal">Sub-Second Zero-Conf Checkout</p>
             </div>
           </div>
 
-          {/* Block Height */}
-          <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-[#0F1219] border border-[#1E2638]">
-            <Activity className="w-3.5 h-3.5 text-[#00E599]" />
-            <span className="text-[#8892B0] hidden sm:inline">Block:</span>
-            <span className="text-gray-200 font-semibold tabular-nums">
-              {blockHeight > 0 ? `#${blockHeight.toLocaleString()}` : "Syncing..."}
-            </span>
-          </div>
-
-          {/* Network Switcher */}
-          <div className="flex items-center rounded-md bg-[#0F1219] border border-[#1E2638] p-0.5">
+          {/* Mobile network switcher */}
+          <div className="md:hidden flex items-center rounded-lg bg-slate-900 border border-slate-800 p-1">
             <button
               onClick={() => onNetworkChange("chipnet")}
-              className={`px-2 py-1 rounded text-[11px] transition-colors ${
-                network === "chipnet"
-                  ? "bg-[#00C2FF]/15 text-[#00C2FF] font-semibold border border-[#00C2FF]/30"
-                  : "text-[#8892B0] hover:text-white"
+              className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                network === "chipnet" ? "bg-sky-500/20 text-sky-400" : "text-slate-400"
               }`}
             >
-              Chipnet
+              Testnet
             </button>
             <button
               onClick={() => onNetworkChange("mainnet")}
-              className={`px-2 py-1 rounded text-[11px] transition-colors ${
+              className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                network === "mainnet" ? "bg-emerald-500/20 text-[#00E599]" : "text-slate-400"
+              }`}
+            >
+              Mainnet
+            </button>
+          </div>
+        </div>
+
+        {/* Telemetry info chips & actions */}
+        <div className="flex flex-wrap items-center justify-between md:justify-end gap-2.5 w-full md:w-auto">
+          {/* Fulcrum Node Status */}
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs">
+            <div className="relative flex h-2 w-2">
+              {isOnline && (
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              )}
+              <span
+                className={`relative inline-flex rounded-full h-2 w-2 ${
+                  isOnline ? "bg-emerald-400" : "bg-amber-400"
+                }`}
+              ></span>
+            </div>
+            <span className="text-slate-400">Fulcrum Node:</span>
+            <span className="text-slate-200 font-mono text-[11px] truncate max-w-[130px]">
+              {activeServer ? activeServer.replace("wss://", "").replace(":50004", "") : "Reconnecting..."}
+            </span>
+            {isOnline && (
+              <span className="text-emerald-400 font-mono text-[10px] bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                {pingMs}ms
+              </span>
+            )}
+          </div>
+
+          {/* Block Height Ticker */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs">
+            <Activity className="w-3.5 h-3.5 text-slate-400" />
+            <span className="text-slate-400">Block</span>
+            <span className="font-mono text-slate-200 font-semibold tabular-nums text-[11px]">
+              {blockHeight > 0 ? `#${blockHeight.toLocaleString()}` : "Syncing"}
+            </span>
+          </div>
+
+          {/* Desktop Network Switcher */}
+          <div className="hidden md:flex items-center rounded-xl bg-slate-900/90 border border-slate-800 p-1">
+            <button
+              onClick={() => onNetworkChange("chipnet")}
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
+                network === "chipnet"
+                  ? "bg-sky-500/15 text-sky-400 shadow-sm border border-sky-500/30"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              Chipnet (Testnet)
+            </button>
+            <button
+              onClick={() => onNetworkChange("mainnet")}
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
                 network === "mainnet"
-                  ? "bg-[#00E599]/15 text-[#00E599] font-semibold border border-[#00E599]/30"
-                  : "text-[#8892B0] hover:text-white"
+                  ? "bg-emerald-500/15 text-[#00E599] shadow-sm border border-emerald-500/30"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
               Mainnet
             </button>
           </div>
 
-          {/* WizardConnect Wallet Button */}
+          {/* WizardConnect Wallet */}
           <button
             onClick={onConnectWallet}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#151B26] hover:bg-[#1E2638] text-white border border-[#1E2638] transition-all cursor-pointer hover:border-[#00E599]/40"
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer border ${
+              walletAddress
+                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20"
+                : "bg-slate-800 hover:bg-slate-700/80 text-white border-slate-700 hover:border-slate-600"
+            }`}
           >
-            <Wallet className="w-3.5 h-3.5 text-[#00E599]" />
+            {walletAddress ? (
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#00E599]" />
+            ) : (
+              <Wallet className="w-3.5 h-3.5 text-emerald-400" />
+            )}
             <span>
               {walletAddress
                 ? `${walletAddress.slice(0, 8)}...${walletAddress.slice(-4)}`
-                : "WizardConnect"}
+                : "Connect Wallet"}
             </span>
           </button>
         </div>

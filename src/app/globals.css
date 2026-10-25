@@ -2,14 +2,14 @@
 
 @layer base {
   :root {
-    --background: #08090D;
-    --foreground: #F3F4F6;
-    --card: #0F1219;
-    --card-foreground: #F3F4F6;
-    --border: #1E2638;
+    --background: #0B0E14;
+    --foreground: #F1F5F9;
+    --card: #111722;
+    --card-foreground: #F8FAFC;
+    --border: #1E293B;
     --emerald-bch: #00E599;
-    --emerald-glow: rgba(0, 229, 153, 0.15);
-    --cyan-wss: #00C2FF;
+    --emerald-glow: rgba(0, 229, 153, 0.2);
+    --cyan-wss: #38BDF8;
     --amber-pending: #F59E0B;
   }
 
@@ -22,20 +22,29 @@
   }
 }
 
-/* Custom scrollbar for telemetry terminal */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #08090D;
+  background: #0B0E14;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E2638;
-  border-radius: 3px;
+  background: #1E293B;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2D3748;
+  background: #334155;
+}
+
+/* Glow effects */
+.bch-glow-sm {
+  box-shadow: 0 0 20px -5px rgba(0, 229, 153, 0.25);
+}
+
+.bch-glow-lg {
+  box-shadow: 0 0 35px -5px rgba(0, 229, 153, 0.35);
 }
 
 @keyframes pulse-ring {
@@ -45,7 +54,7 @@
   }
   70% {
     transform: scale(1);
-    box-shadow: 0 0 0 12px rgba(0, 229, 153, 0);
+    box-shadow: 0 0 0 16px rgba(0, 229, 153, 0);
   }
   100% {
     transform: scale(0.95);
@@ -54,18 +63,18 @@
 }
 
 .animate-pulse-ring {
-  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse-ring 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-@keyframes radar-scan {
-  0% {
-    transform: translateY(-100%);
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0);
   }
-  100% {
-    transform: translateY(1000%);
+  50% {
+    transform: translateY(-4px);
   }
 }
 
-.animate-radar-scan {
-  animation: radar-scan 4s linear infinite;
+.animate-float-gentle {
+  animation: float-gentle 4s ease-in-out infinite;
 }
