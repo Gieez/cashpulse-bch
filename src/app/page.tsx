@@ -12,7 +12,7 @@ import {
   MempoolEventLog,
 } from "@/lib/fulcrum";
 import { validateCashAddress } from "@/lib/bch";
-import { ShieldCheck, Zap, Globe, Sparkles, QrCode, ArrowRight, Shield } from "lucide-react";
+import { ShieldCheck, Zap, Globe, Shield } from "lucide-react";
 
 const DEMO_ADDRESSES = {
   mainnet: "bitcoincash:qp3wjpa3tjlj042z2wv7hahsldgwhwy0rq9sywjpyy",
@@ -41,7 +41,6 @@ function CashPulseContent() {
   const listenerRef = useRef<FulcrumZeroConfListener | null>(null);
   const invoiceOpenTimestamp = useRef<number>(Date.now());
 
-  // URL search params
   useEffect(() => {
     const paramTo = searchParams.get("to");
     const paramNet = searchParams.get("net");
@@ -58,7 +57,6 @@ function CashPulseContent() {
     }
   }, [searchParams]);
 
-  // Live BCH price
   useEffect(() => {
     async function fetchBchPrice() {
       try {
@@ -76,7 +74,6 @@ function CashPulseContent() {
     fetchBchPrice();
   }, []);
 
-  // Fulcrum listener
   useEffect(() => {
     const listener = new FulcrumZeroConfListener(network);
     listenerRef.current = listener;
@@ -150,7 +147,7 @@ function CashPulseContent() {
       timestamp: Date.now(),
       direction: "in",
       method: "blockchain.address.subscribe",
-      payload: `[ZERO-CONF] Transaksi diterima: ${randomTxid.slice(0, 16)}... (${simulatedLatency}ms)`,
+      payload: `[ZERO-CONF] Transaction propagated: ${randomTxid.slice(0, 16)}... (${simulatedLatency}ms)`,
     };
     setLogs((prev) => [...prev, logEntry]);
 
@@ -196,22 +193,22 @@ function CashPulseContent() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[#00E599] text-xs font-medium mb-3">
               <Zap className="w-3.5 h-3.5 fill-current" />
-              <span>Verifikasi Pembayaran Sub-Detik (&lt; 500ms)</span>
+              <span>Sub-Second Settlement (&lt; 500ms)</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-              Kasir Pembayaran Bitcoin Cash Instan & Non-Custodial
+              Instant Non-Custodial Bitcoin Cash Checkout Terminal
             </h1>
             <p className="text-sm sm:text-base text-slate-400 mt-2 leading-relaxed">
-              Terima Bitcoin Cash langsung ke dompet pribadi tanpa perantara. Transaksi terverifikasi seketika lewat node WebSocket Fulcrum tanpa perlu menunggu 10 menit blok konfirmasi.
+              Accept Bitcoin Cash directly into self-custody wallets with zero intermediaries. Verify transactions instantly via decentralized Fulcrum WebSocket nodes without waiting 10 minutes for block miners.
             </p>
           </div>
 
           <div className="flex flex-row lg:flex-col items-start lg:items-end gap-3 shrink-0">
             <div className="px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
-              <span className="text-[11px] text-slate-400 block">Sistem Keamanan</span>
+              <span className="text-[11px] text-slate-400 block">Security Engine</span>
               <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1.5 mt-0.5">
                 <ShieldCheck className="w-4 h-4" />
-                DSPROOF Siap & Aktif
+                DSPROOF Native
               </span>
             </div>
           </div>
@@ -223,23 +220,23 @@ function CashPulseContent() {
             <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold">1</div>
             <div>
               <span className="font-semibold text-slate-200 block">Scan QR Invoice</span>
-              <span className="text-slate-400 text-[11px]">Gunakan Paytaca, Zapit, atau Cashonize</span>
+              <span className="text-slate-400 text-[11px]">Use Paytaca, Zapit, or Cashonize</span>
             </div>
           </div>
 
           <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/40 border border-slate-800/70">
             <div className="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center font-bold">2</div>
             <div>
-              <span className="font-semibold text-slate-200 block">Kirim BCH ke Jaringan</span>
-              <span className="text-slate-400 text-[11px]">Transaksi disiarkan ke mempool P2P</span>
+              <span className="font-semibold text-slate-200 block">Broadcast to Network</span>
+              <span className="text-slate-400 text-[11px]">Tx propagates across P2P mempool</span>
             </div>
           </div>
 
           <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/40 border border-slate-800/70">
             <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold">3</div>
             <div>
-              <span className="font-semibold text-slate-200 block">Terverifikasi &lt; 500ms</span>
-              <span className="text-slate-400 text-[11px]">Barang/layanan aman diserahkan</span>
+              <span className="font-semibold text-slate-200 block">Verified in &lt; 500ms</span>
+              <span className="text-slate-400 text-[11px]">Instant merchant goods release</span>
             </div>
           </div>
         </div>
@@ -282,21 +279,21 @@ function CashPulseContent() {
           <div className="flex items-center gap-2 mb-4">
             <Shield className="w-4 h-4 text-sky-400" />
             <h3 className="text-sm font-semibold text-white">
-              Mengapa Bitcoin Cash Zero-Conf Berbeda?
+              Why Bitcoin Cash Zero-Conf is Different
             </h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-400 leading-relaxed">
             <div className="p-4 bg-slate-900/80 border border-slate-800 rounded-xl">
-              <span className="text-slate-200 font-semibold block mb-1">Koneksi Browser Langsung</span>
-              Aplikasi ini terhubung langsung dari browser pengguna ke node Fulcrum terdesentralisasi via SSL WebSocket, tanpa menyimpan kunci rahasia atau bergantung pada server terpusat.
+              <span className="text-slate-200 font-semibold block mb-1">Direct Browser WSS</span>
+              Connects straight to decentralized Fulcrum nodes over SSL WebSocket. No centralized middleman API or custody servers required.
             </div>
             <div className="p-4 bg-slate-900/80 border border-slate-800 rounded-xl">
               <span className="text-slate-200 font-semibold block mb-1">Double-Spend Proof (DSPROOF)</span>
-              Jaringan Bitcoin Cash secara otomatis mendeteksi dan menyiarkan bukti jika ada upaya pengeluaran ganda, sehingga transaksi unconfirmed aman untuk nilai retail.
+              The Bitcoin Cash network automatically detects and relays cryptographic proofs of competing spend attempts, making unconfirmed transactions secure for retail.
             </div>
             <div className="p-4 bg-slate-900/80 border border-slate-800 rounded-xl">
-              <span className="text-slate-200 font-semibold block mb-1">Biaya Transaksi $0.001</span>
-              Biaya transfer Bitcoin Cash kurang dari satu sen, menjadikannya ideal untuk pembayaran mikro, tip kreator, dan belanja harian.
+              <span className="text-slate-200 font-semibold block mb-1">Sub-Cent Fees (&lt; $0.001)</span>
+              Transaction fees on Bitcoin Cash cost less than a single cent, making micro-transactions, digital tipping, and everyday commerce frictionless.
             </div>
           </div>
         </section>
@@ -306,14 +303,14 @@ function CashPulseContent() {
       <footer className="border-t border-slate-800 bg-[#0B0E14] py-6 px-4 sm:px-6 lg:px-8 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <span>Dibuat khusus untuk Hackathon BCH BLAZE 2026 (DoraHacks)</span>
+            <span>Built exclusively for BCH BLAZE 2026 Hackathon (DoraHacks)</span>
           </div>
           <div className="flex items-center gap-4 text-slate-400">
             <span className="flex items-center gap-1.5">
               <Globe className="w-3.5 h-3.5 text-emerald-400" />
               Non-Custodial Web3
             </span>
-            <span>Lisensi MIT</span>
+            <span>MIT License</span>
           </div>
         </div>
       </footer>
@@ -323,7 +320,7 @@ function CashPulseContent() {
 
 export default function Home() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0B0E14] text-white flex items-center justify-center font-mono">Memuat CashPulse...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#0B0E14] text-white flex items-center justify-center font-mono">Loading CashPulse...</div>}>
       <CashPulseContent />
     </Suspense>
   );

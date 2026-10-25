@@ -15,7 +15,6 @@ import {
   RefreshCw,
   ArrowRight,
   Store,
-  ChevronDown,
 } from "lucide-react";
 import {
   BCH_NETWORKS,
@@ -69,7 +68,6 @@ export function CheckoutTerminal({
     message: memo,
   });
 
-  // Re-generate QR Code
   useEffect(() => {
     let isMounted = true;
     QRCode.toDataURL(bip21Uri, {
@@ -90,7 +88,6 @@ export function CheckoutTerminal({
     };
   }, [bip21Uri]);
 
-  // Zero-conf celebration
   useEffect(() => {
     if (zeroConfTx) {
       playZeroConfSound();
@@ -110,7 +107,7 @@ export function CheckoutTerminal({
   const handleAddressSubmit = () => {
     const check = validateCashAddress(addressInput, network);
     if (!check.isValid) {
-      setAddressError(check.error || "Format CashAddr tidak valid");
+      setAddressError(check.error || "Invalid CashAddr format");
       return;
     }
     setAddressError("");
@@ -136,7 +133,6 @@ export function CheckoutTerminal({
 
   return (
     <div className="bg-[#111722] border border-slate-800 rounded-2xl p-6 lg:p-7 shadow-xl relative overflow-hidden transition-all">
-      {/* Soft ambient lighting */}
       <div className="absolute -top-24 -right-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -153,7 +149,7 @@ export function CheckoutTerminal({
                 Non-Custodial
               </span>
             </div>
-            <p className="text-xs text-slate-400">Pembayaran langsung ke wallet Anda tanpa perantara</p>
+            <p className="text-xs text-slate-400">Direct settlement to your self-custody wallet without intermediaries</p>
           </div>
         </div>
 
@@ -167,16 +163,16 @@ export function CheckoutTerminal({
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition-all cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Invoice Baru</span>
+              <span>New Invoice</span>
             </button>
           ) : (
             <button
               onClick={onSimulateTx}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-[#00E599] border border-emerald-500/30 text-xs font-medium transition-all cursor-pointer bch-glow-sm"
-              title="Coba simulasi transaksi zero-conf untuk testing instan"
+              title="Test instant zero-conf payment simulation"
             >
               <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Simulasi Pembayaran</span>
+              <span>Simulate Payment</span>
             </button>
           )}
         </div>
@@ -196,21 +192,20 @@ export function CheckoutTerminal({
               />
             ) : (
               <div className="w-52 h-52 flex items-center justify-center text-xs text-slate-400 font-mono">
-                Membuat QR Code...
+                Generating QR Code...
               </div>
             )}
 
-            {/* Zero-conf overlay when payment detected */}
             {zeroConfTx && (
               <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center p-4 text-center animate-fadeIn">
                 <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500 flex items-center justify-center text-[#00E599] mb-2 animate-pulse-ring">
                   <Zap className="w-6 h-6 fill-current" />
                 </div>
                 <span className="font-semibold text-sm text-[#00E599]">
-                  Pembayaran Terdeteksi
+                  Payment Verified
                 </span>
                 <span className="font-mono text-xs text-slate-300 mt-1">
-                  Kecepatan: {zeroConfTx.latencyMs} ms
+                  Latency: {zeroConfTx.latencyMs} ms
                 </span>
               </div>
             )}
@@ -222,7 +217,7 @@ export function CheckoutTerminal({
               className="text-xs text-slate-300 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700 hover:border-slate-600 transition-colors"
             >
               {copiedUri ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copiedUri ? "URI Tersalin" : "Salin BIP-21 URI"}</span>
+              <span>{copiedUri ? "URI Copied" : "Copy BIP-21 URI"}</span>
             </button>
           </div>
         </div>
@@ -232,7 +227,7 @@ export function CheckoutTerminal({
           {/* Amount Box */}
           <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-4">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
-              <span>JUMLAH TAGIHAN</span>
+              <span>PAYMENT DUE</span>
               <span className="font-mono text-slate-300">1 BCH ≈ ${bchPriceUsd.toLocaleString()} USD</span>
             </div>
 
@@ -256,7 +251,7 @@ export function CheckoutTerminal({
 
             {/* Quick Presets */}
             <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-slate-800/80">
-              <span className="text-[11px] text-slate-400">Pilihan:</span>
+              <span className="text-[11px] text-slate-400">Presets:</span>
               {[0.001, 0.005, 0.01, 0.05].map((preset) => (
                 <button
                   key={preset}
@@ -276,20 +271,20 @@ export function CheckoutTerminal({
           {/* Destination Address Pill */}
           <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
-              <span>ALAMAT TUJUAN (CASHADDR)</span>
+              <span>DESTINATION CASHADDR</span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsEditingAddress(!isEditingAddress)}
                   className="text-xs text-sky-400 hover:underline cursor-pointer"
                 >
-                  {isEditingAddress ? "Batal" : "Ganti"}
+                  {isEditingAddress ? "Cancel" : "Change"}
                 </button>
                 <button
                   onClick={() => copyToClipboard(watchedAddress, "addr")}
                   className="hover:text-white flex items-center gap-1 text-xs text-slate-300"
                 >
                   {copiedAddr ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedAddr ? "Tersalin" : "Salin"}</span>
+                  <span>{copiedAddr ? "Copied" : "Copy"}</span>
                 </button>
               </div>
             </div>
@@ -301,13 +296,13 @@ export function CheckoutTerminal({
                   value={addressInput}
                   onChange={(e) => setAddressInput(e.target.value)}
                   className="flex-1 font-mono text-xs text-slate-200 bg-slate-950 px-2.5 py-2 rounded-lg border border-slate-700 outline-none focus:border-emerald-500"
-                  placeholder="Masukkan CashAddr tujuan..."
+                  placeholder="Enter destination CashAddr..."
                 />
                 <button
                   onClick={handleAddressSubmit}
                   className="px-3 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold text-xs transition-colors"
                 >
-                  Simpan
+                  Save
                 </button>
               </div>
             ) : (
@@ -326,7 +321,7 @@ export function CheckoutTerminal({
 
           {/* Order Memo */}
           <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5">
-            <span className="text-xs text-slate-400 block mb-1">Keterangan / Memo Invoice</span>
+            <span className="text-xs text-slate-400 block mb-1">Invoice Memo / Order Description</span>
             <input
               type="text"
               value={memo}
@@ -342,7 +337,7 @@ export function CheckoutTerminal({
               className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-[#00E599] hover:from-emerald-400 hover:to-emerald-300 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30"
             >
               <Zap className="w-4 h-4 fill-current" />
-              <span>BAYAR {amountBch} BCH DENGAN WALLET TERHUBUNG</span>
+              <span>PAY {amountBch} BCH VIA CONNECTED WALLET</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           )}
@@ -372,7 +367,7 @@ export function CheckoutTerminal({
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-sm">
-                  {zeroConfTx ? "Transaksi Berhasil Terverifikasi (Zero-Conf)" : "Menunggu Pembayaran Masuk..."}
+                  {zeroConfTx ? "Zero-Conf Transaction Detected" : "Awaiting Incoming Payment..."}
                 </span>
                 {zeroConfTx && (
                   <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-[#00E599] border border-emerald-500/40">
@@ -382,8 +377,8 @@ export function CheckoutTerminal({
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
                 {zeroConfTx
-                  ? `Transaksi langsung masuk ke node Fulcrum dalam ${zeroConfTx.latencyMs} milidetik. Barang/layanan aman diserahkan.`
-                  : "Mendengarkan jaringan peer-to-peer Bitcoin Cash melalui node WebSocket terdesentralisasi..."}
+                  ? `Transaction propagated to Fulcrum node in ${zeroConfTx.latencyMs}ms. Safe for instant merchant release.`
+                  : "Listening to decentralized peer-to-peer Bitcoin Cash network via live WebSocket..."}
               </p>
             </div>
           </div>
@@ -404,7 +399,7 @@ export function CheckoutTerminal({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 transition-colors"
-                  title="Buka di Block Explorer"
+                  title="View on Block Explorer"
                 >
                   <ExternalLink className="w-4 h-4" />
                 </a>

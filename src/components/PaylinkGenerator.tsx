@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Link2, Copy, Check, Sparkles, Share2 } from "lucide-react";
+import { Link2, Copy, Check, Sparkles } from "lucide-react";
 
 interface PaylinkGeneratorProps {
   currentAddress: string;
@@ -11,7 +11,7 @@ interface PaylinkGeneratorProps {
 export function PaylinkGenerator({ currentAddress, network }: PaylinkGeneratorProps) {
   const [recipient, setRecipient] = useState(currentAddress);
   const [amount, setAmount] = useState<string>("0.01");
-  const [description, setDescription] = useState<string>("Support Digital / Freelance");
+  const [description, setDescription] = useState<string>("Digital Support / Freelance");
   const [generatedLink, setGeneratedLink] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
 
@@ -43,10 +43,10 @@ export function PaylinkGenerator({ currentAddress, network }: PaylinkGeneratorPr
           </div>
           <div>
             <h3 className="text-sm font-semibold text-white">
-              Pembuat PayLink Otomatis (Merchant & Kreator)
+              Instant PayLink Forge (Merchants & Creators)
             </h3>
             <p className="text-xs text-slate-400">
-              Buat tautan pembayaran instan untuk bio media sosial, invoice klien, atau donasi.
+              Generate one-click zero-conf payment links for social bios, client invoices, or tipping jars.
             </p>
           </div>
         </div>
@@ -54,7 +54,7 @@ export function PaylinkGenerator({ currentAddress, network }: PaylinkGeneratorPr
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-4">
         <div>
-          <label className="text-xs text-slate-300 font-medium block mb-1.5">Alamat BCH Anda</label>
+          <label className="text-xs text-slate-300 font-medium block mb-1.5">Your BCH CashAddr</label>
           <input
             type="text"
             value={recipient}
@@ -65,7 +65,7 @@ export function PaylinkGenerator({ currentAddress, network }: PaylinkGeneratorPr
         </div>
 
         <div>
-          <label className="text-xs text-slate-300 font-medium block mb-1.5">Jumlah Patokan (BCH)</label>
+          <label className="text-xs text-slate-300 font-medium block mb-1.5">Preset Amount (BCH)</label>
           <input
             type="number"
             step="0.001"
@@ -77,12 +77,12 @@ export function PaylinkGenerator({ currentAddress, network }: PaylinkGeneratorPr
         </div>
 
         <div>
-          <label className="text-xs text-slate-300 font-medium block mb-1.5">Keterangan / Nama Produk</label>
+          <label className="text-xs text-slate-300 font-medium block mb-1.5">Product / Invoice Memo</label>
           <input
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Desain Logo / Donasi"
+            placeholder="Logo Design / Tip Jar"
             className="w-full text-xs text-slate-200 bg-slate-900/90 px-3 py-2 rounded-xl border border-slate-800 outline-none focus:border-emerald-500 transition-colors"
           />
         </div>
@@ -94,7 +94,7 @@ export function PaylinkGenerator({ currentAddress, network }: PaylinkGeneratorPr
           className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 hover:border-slate-600 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
         >
           <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-          <span>Buat PayLink Sekarang</span>
+          <span>Generate PayLink</span>
         </button>
 
         {generatedLink && (
@@ -105,7 +105,7 @@ export function PaylinkGenerator({ currentAddress, network }: PaylinkGeneratorPr
               className="text-[#00E599] hover:text-white flex items-center gap-1 text-xs font-medium shrink-0 px-2 py-1 rounded bg-slate-800"
             >
               {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? "Tersalin" : "Salin Link"}</span>
+              <span>{copied ? "Copied" : "Copy Link"}</span>
             </button>
           </div>
         )}

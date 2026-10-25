@@ -79,7 +79,7 @@ export function MempoolRadar({
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-2 gap-3">
             <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
-              <span className="text-[11px] text-slate-400 block mb-1">Latency Rata-Rata</span>
+              <span className="text-[11px] text-slate-400 block mb-1">Average Latency</span>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-xl font-bold font-mono text-[#00E599]">
                   {pingMs > 0 ? `${pingMs}ms` : "320ms"}
@@ -89,10 +89,10 @@ export function MempoolRadar({
             </div>
 
             <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
-              <span className="text-[11px] text-slate-400 block mb-1">Proteksi Ganda</span>
+              <span className="text-[11px] text-slate-400 block mb-1">Double-Spend Shield</span>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <CheckCircle className="w-4 h-4 text-emerald-400" />
-                <span className="text-xs font-semibold text-white">DSPROOF Aktif</span>
+                <span className="text-xs font-semibold text-white">DSPROOF Active</span>
               </div>
             </div>
           </div>
@@ -101,7 +101,7 @@ export function MempoolRadar({
           <div className="flex-1 flex flex-col">
             <span className="text-xs font-semibold text-slate-300 mb-2.5 flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-sky-400" />
-              Aktivitas Jaringan Terakhir
+              Recent Network Activity
             </span>
 
             <div className="flex-1 space-y-2.5 overflow-y-auto max-h-[300px] pr-1">
@@ -123,17 +123,17 @@ export function MempoolRadar({
                         {isZeroConf ? (
                           <>
                             <Zap className="w-3 h-3 text-[#00E599] fill-current" />
-                            <span>Zero-Conf Transaksi Diterima</span>
+                            <span>Zero-Conf Transaction Detected</span>
                           </>
                         ) : isBlock ? (
                           <>
                             <Activity className="w-3 h-3 text-sky-400" />
-                            <span>Blok Baru BCH Ditambang</span>
+                            <span>New BCH Block Mined</span>
                           </>
                         ) : (
                           <>
                             <CheckCircle className="w-3 h-3 text-slate-400" />
-                            <span>Stream Sinkronisasi Node</span>
+                            <span>Node Stream Synced</span>
                           </>
                         )}
                       </span>
@@ -166,7 +166,7 @@ export function MempoolRadar({
               className="hover:text-white flex items-center gap-1 text-[10px]"
             >
               <Trash2 className="w-3 h-3" />
-              <span>Bersihkan</span>
+              <span>Clear</span>
             </button>
           </div>
 
