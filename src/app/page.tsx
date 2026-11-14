@@ -335,7 +335,7 @@ export default function HomePage() {
 
               <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
                 <a
-                  href="https://docs.google.com/presentation/d/1Yfuk9CJkf4U9M_WukcELhumWgj3Ak6345Ewy8hSp-Hk/edit?usp=sharing"
+                  href="https://docs.google.com/presentation/d/107f16_mDvKEnu5qer17X_riQqjKID3Y8tNB4gN1DBes/edit?usp=sharing"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium transition-all border border-slate-700"

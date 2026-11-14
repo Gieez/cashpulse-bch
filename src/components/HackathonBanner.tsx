@@ -12,7 +12,7 @@ interface HackathonBannerProps {
 
 export function HackathonBanner({
   tokenAddress = "bitcoincash:zprdydg8545fxwf92cak8yzwh354748eegmvx2grtx",
-  presentationUrl = "https://docs.google.com/presentation/d/1Yfuk9CJkf4U9M_WukcELhumWgj3Ak6345Ewy8hSp-Hk/edit?usp=sharing",
+  presentationUrl = "https://docs.google.com/presentation/d/107f16_mDvKEnu5qer17X_riQqjKID3Y8tNB4gN1DBes/edit?usp=sharing",
   repoUrl = "https://github.com/Gieez/cashpulse-bch",
   videoUrl = "/cashpulse-demo.mp4",
 }: HackathonBannerProps) {
