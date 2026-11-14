@@ -119,7 +119,7 @@ export default function HomePage() {
                 </Link>
 
                 <a
-                  href="/demo.html"
+                  href="/cashpulse-demo.mp4"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-3.5 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800 text-slate-300 hover:text-white text-sm transition-all"

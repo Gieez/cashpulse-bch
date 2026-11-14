@@ -14,7 +14,7 @@ export function HackathonBanner({
   tokenAddress = "bitcoincash:zprdydg8545fxwf92cak8yzwh354748eegmvx2grtx",
   presentationUrl = "https://docs.google.com/presentation/d/1Yfuk9CJkf4U9M_WukcELhumWgj3Ak6345Ewy8hSp-Hk/edit?usp=sharing",
   repoUrl = "https://github.com/Gieez/cashpulse-bch",
-  videoUrl = "/demo.html",
+  videoUrl = "/cashpulse-demo.mp4",
 }: HackathonBannerProps) {
   const [copied, setCopied] = useState(false);
 
