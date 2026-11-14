@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { TelemetryHeader } from "@/components/TelemetryHeader";
+import { HackathonBanner } from "@/components/HackathonBanner";
 import { CheckoutTerminal } from "@/components/CheckoutTerminal";
 import { MempoolRadar } from "@/components/MempoolRadar";
 import { PaylinkGenerator } from "@/components/PaylinkGenerator";
@@ -15,7 +16,7 @@ import { validateCashAddress } from "@/lib/bch";
 import { ShieldCheck, Zap, Globe, Shield } from "lucide-react";
 
 const DEMO_ADDRESSES = {
-  mainnet: "bitcoincash:qp3wjpa3tjlj042z2wv7hahsldgwhwy0rq9sywjpyy",
+  mainnet: "bitcoincash:qprdydg8545fxwf92cak8yzwh354748eegux45x954",
   chipnet: "bchtest:qq4vj2008wug0k0w6pmlnrv2l2xww5sftvv9g2g8u3",
 };
 
@@ -176,6 +177,7 @@ function CashPulseContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0B0E14] text-slate-100">
+      <HackathonBanner />
       <TelemetryHeader
         network={network}
         onNetworkChange={handleNetworkChange}
