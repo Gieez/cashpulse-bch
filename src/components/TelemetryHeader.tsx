@@ -3,6 +3,7 @@
 import React from "react";
 import { Activity, Server, Radio, Wallet, CheckCircle2, Play } from "lucide-react";
 import { ConnectionState } from "@/lib/fulcrum";
+import { CashPulseLogo } from "@/components/CashPulseLogo";
 
 interface TelemetryHeaderProps {
   network: "mainnet" | "chipnet";
@@ -32,21 +33,7 @@ export function TelemetryHeader({
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3.5">
         {/* Brand identity */}
         <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
-          <div className="flex items-center gap-3">
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-950/40 border border-emerald-500/30 bch-glow-sm">
-              <span className="font-mono font-black text-[#00E599] text-xl">⚡</span>
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-sans font-bold text-white tracking-tight text-lg">CashPulse</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-[#00E599] border border-emerald-500/20 font-medium">
-                  BCH BLAZE
-                </span>
-              </div>
-              <p className="text-xs text-slate-400 font-normal">Sub-Second Zero-Conf Checkout</p>
-            </div>
-          </div>
+          <CashPulseLogo size={36} subtext="Sub-Second Zero-Conf Checkout" />
 
           {/* Mobile network switcher */}
           <div className="md:hidden flex items-center rounded-lg bg-slate-900 border border-slate-800 p-1">
